@@ -46,13 +46,9 @@ npm install
 npm run dev
 ```
 
-Runs on:
 
-```
-http://localhost:5173
-```
 
----
+
 
 ## ▶️ Run Backend
 
@@ -62,10 +58,5 @@ npm install
 npm run dev
 ```
 
-Runs on:
-
-```
-http://localhost:5000
-```
 
 ---
