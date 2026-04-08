@@ -6,6 +6,7 @@ const links = [
   { label: 'Home', to: '/' },
   { label: 'Medicines', to: '/medicines' },
   { label: 'Team', to: '/team' },
+  { label: 'Reservation', to: '/reservation' }, // 👈 جديد
   { label: 'Admin Dashboard', to: '/admin' },
 ]
 
@@ -40,17 +41,23 @@ export default function Navbar() {
             </svg>
           </div>
           <div>
-            <div className="font-bold text-emerald-800 text-base leading-none" style={{ fontFamily: 'Georgia, serif' }}>MediCare</div>
-            <div className="text-emerald-500 text-[10px] tracking-widest uppercase leading-none">Pharmacy</div>
+            <div className="font-bold text-emerald-800 text-base leading-none" style={{ fontFamily: 'Georgia, serif' }}>
+              MediCare
+            </div>
+            <div className="text-emerald-500 text-[10px] tracking-widest uppercase leading-none">
+              Pharmacy
+            </div>
           </div>
         </Link>
 
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-1">
           {links.map((l) => {
-            const isAdmin = l.label === 'Admin Dashboard'
+            const isSpecial =
+              l.label === 'Admin Dashboard' || l.label === 'Reservation'
             const isActive = location.pathname === l.to
-            if (isAdmin) {
+
+            if (isSpecial) {
               return (
                 <Link
                   key={l.to}
@@ -61,6 +68,7 @@ export default function Navbar() {
                 </Link>
               )
             }
+
             return (
               <Link
                 key={l.to}
@@ -113,7 +121,7 @@ export default function Navbar() {
                   key={l.to}
                   to={l.to}
                   className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    l.label === 'Admin Dashboard'
+                    l.label === 'Admin Dashboard' || l.label === 'Reservation'
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-slate-600 hover:bg-emerald-50'
                   }`}
