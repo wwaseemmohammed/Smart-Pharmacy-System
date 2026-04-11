@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 const links = [
   { label: 'Home', to: '/' },
   { label: 'Medicines', to: '/medicines' },
-  { label: 'Team', to: '/team' },
-  { label: 'Reservation', to: '/reservation' }, // 👈 جديد
-  { label: 'Admin Dashboard', to: '/admin' },
+  { label: 'Doctors & Careers', to: '/doctors' },
+  { label: 'Booking', to: '/booking' },
+  { label: 'Dashboard', to: '/admin' },
 ]
 
 export default function Navbar() {
@@ -26,11 +26,13 @@ export default function Navbar() {
   }, [location.pathname])
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled
-        ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-emerald-100'
-        : 'bg-white/80 backdrop-blur-sm'
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-emerald-100'
+          : 'bg-white/80 backdrop-blur-sm'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
 
         {/* Logo */}
@@ -53,11 +55,10 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-1">
           {links.map((l) => {
-            const isSpecial =
-              l.label === 'Admin Dashboard' || l.label === 'Reservation'
+            const isAdmin = l.label === 'Dashboard'
             const isActive = location.pathname === l.to
 
-            if (isSpecial) {
+            if (isAdmin) {
               return (
                 <Link
                   key={l.to}
@@ -121,7 +122,7 @@ export default function Navbar() {
                   key={l.to}
                   to={l.to}
                   className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    l.label === 'Admin Dashboard' || l.label === 'Reservation'
+                    l.label === 'Dashboard'
                       ? 'text-emerald-700 bg-emerald-50'
                       : 'text-slate-600 hover:bg-emerald-50'
                   }`}

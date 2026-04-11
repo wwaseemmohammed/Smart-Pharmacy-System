@@ -1,39 +1,38 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const team = [
   {
-    name: 'Dr. Layla Hassan',
-    role: 'Chief Pharmacist',
-    desc: '15+ years of clinical pharmacy experience, specialized in chronic disease management.',
-    initials: 'LH',
+    name: 'Dr. Ahmad Al-Khaldi',
+    role: 'Clinic Owner & General Manager',
+    initials: 'AK',
     color: '#1D9E75',
     bg: '#E1F5EE',
+    desc: 'Founder of MediCare Clinic, specialized in healthcare management with over 20 years of experience in the medical field.',
   },
   {
-    name: 'Omar Khalid',
-    role: 'Senior Pharmacist',
-    desc: 'Expert in pediatric medications and patient counseling with a passion for community health.',
-    initials: 'OK',
+    name: 'Sarah Al-Najjar',
+    role: 'Finance & Accounting Manager',
+    initials: 'SN',
     color: '#185FA5',
     bg: '#E6F1FB',
+    desc: 'Responsible for budgeting, financial reporting, and payroll management. Holds a CPA certification with 10 years of experience.',
   },
   {
-    name: 'Sara Nasser',
-    role: 'Pharmacy Manager',
-    desc: 'Operations specialist ensuring seamless service, inventory control, and staff coordination.',
-    initials: 'SN',
+    name: 'Khaled Abu Omar',
+    role: 'Operations Manager',
+    initials: 'KO',
     color: '#B85A30',
     bg: '#FAECE7',
+    desc: 'Oversees daily operations, coordinates departments, and ensures high-quality service for all patients and visitors.',
   },
   {
-    name: 'Yusuf Al-Amin',
-    role: 'Clinical Advisor',
-    desc: 'Certified in pharmacovigilance and drug interactions, dedicated to patient safety.',
-    initials: 'YA',
+    name: 'Rana Mustafa',
+    role: 'Human Resources Manager',
+    initials: 'RM',
     color: '#7F77DD',
     bg: '#EEEDFE',
+    desc: 'Handles employee affairs, recruitment, training, and fostering a productive and healthy work environment.',
   },
 ]
 
@@ -42,7 +41,7 @@ export default function Team() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="bg-white py-24 px-6" id="team">
+    <section ref={ref} className="bg-white py-24 px-6">
       <div className="max-w-6xl mx-auto">
 
         <div className="text-center mb-14">
@@ -60,7 +59,7 @@ export default function Team() {
             className="text-4xl font-bold text-slate-900 tracking-tight mb-4"
             style={{ fontFamily: 'Georgia, serif' }}
           >
-            Meet Our Pharmacy Staff
+            Leadership & Management Team
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -68,7 +67,7 @@ export default function Team() {
             transition={{ delay: 0.15 }}
             className="text-base text-slate-500 max-w-sm mx-auto leading-relaxed"
           >
-            Our dedicated professionals are here to guide, support, and care for you at every step.
+            A professional administrative team working behind the scenes to ensure the best healthcare experience for you.
           </motion.p>
         </div>
 
@@ -83,9 +82,9 @@ export default function Team() {
               className="bg-white border border-slate-100 rounded-2xl overflow-hidden transition-all"
             >
               {/* Top band */}
-              <div className="h-20 flex justify-center items-end relative" style={{ background: m.bg }}>
+              <div className="h-20 relative flex justify-center" style={{ background: m.bg }}>
                 <div
-                  className="absolute -bottom-8 w-16 h-16 rounded-full border-4 border-white flex items-center justify-center font-bold text-white text-lg"
+                  className="absolute -bottom-8 w-16 h-16 rounded-full border-4 border-white flex items-center justify-center font-bold text-white text-base"
                   style={{ background: m.color, boxShadow: '0 4px 12px rgba(0,0,0,0.12)', fontFamily: 'Georgia, serif' }}
                 >
                   {m.initials}
@@ -93,9 +92,15 @@ export default function Team() {
               </div>
 
               <div className="pt-12 pb-7 px-6 text-center">
-                <h3 className="font-bold text-slate-800 text-base mb-0.5" style={{ fontFamily: 'Georgia, serif' }}>{m.name}</h3>
-                <div className="text-xs font-semibold mb-3" style={{ color: m.color }}>{m.role}</div>
-                <p className="text-xs text-slate-400 leading-relaxed mb-5">{m.desc}</p>
+                <h3 className="font-bold text-slate-800 text-base mb-0.5" style={{ fontFamily: 'Georgia, serif' }}>
+                  {m.name}
+                </h3>
+                <div className="text-xs font-semibold mb-3" style={{ color: m.color }}>
+                  {m.role}
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed mb-5">
+                  {m.desc}
+                </p>
 
                 <div className="flex justify-center gap-2">
                   {['email', 'phone'].map((type) => (
@@ -120,6 +125,7 @@ export default function Team() {
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   )

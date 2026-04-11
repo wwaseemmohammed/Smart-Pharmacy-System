@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const milestones = [
   { year: '2010', text: 'Founded in the heart of Tubas with a commitment to community health.' },
@@ -24,17 +23,19 @@ export default function About() {
     <section ref={ref} className="bg-white py-24 px-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-center">
 
-        {/* Left visual */}
+        {/* ── Left visual ── */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.6 }}
           className="relative"
         >
-          <div className="rounded-3xl p-10 relative overflow-hidden"
-            style={{ background: 'linear-gradient(145deg, #E1F5EE, #dceefb)' }}>
-            <div className="absolute top-[-20px] right-[-20px] w-44 h-44 rounded-full opacity-30"
-              style={{ background: 'rgba(29,158,117,0.15)' }} />
+          <div
+            className="rounded-3xl p-10 relative overflow-hidden"
+            style={{ background: 'linear-gradient(145deg, #E1F5EE, #dceefb)' }}
+          >
+            <div className="absolute top-[-20px] right-[-20px] w-44 h-44 rounded-full"
+              style={{ background: 'rgba(29,158,117,0.1)' }} />
 
             <div className="text-center mb-8">
               <div className="text-7xl font-bold text-emerald-500 leading-none" style={{ fontFamily: 'Georgia, serif' }}>14</div>
@@ -58,14 +59,16 @@ export default function About() {
           </div>
 
           {/* ISO badge */}
-          <div className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-3 border border-emerald-100"
-            style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}>
+          <div
+            className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-3 border border-emerald-100"
+            style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+          >
             <div className="text-xl font-bold text-blue-600" style={{ fontFamily: 'Georgia, serif' }}>ISO</div>
             <div className="text-xs text-slate-400">Certified 2018</div>
           </div>
         </motion.div>
 
-        {/* Right text */}
+        {/* ── Right text ── */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -75,8 +78,10 @@ export default function About() {
             Our Story
           </span>
 
-          <h2 className="text-4xl font-bold text-slate-900 leading-tight tracking-tight mb-5"
-            style={{ fontFamily: 'Georgia, serif' }}>
+          <h2
+            className="text-4xl font-bold text-slate-900 leading-tight tracking-tight mb-5"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
             Established in 2010,<br />Built on Trust
           </h2>
 
@@ -90,8 +95,10 @@ export default function About() {
 
           <div className="grid grid-cols-2 gap-3">
             {highlights.map((item) => (
-              <div key={item.label}
-                className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 border border-emerald-100 rounded-xl">
+              <div
+                key={item.label}
+                className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 border border-emerald-100 rounded-xl"
+              >
                 <span className="text-lg">{item.icon}</span>
                 <span className="text-xs font-semibold text-slate-600">{item.label}</span>
               </div>

@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 export default function CTA() {
@@ -13,7 +12,6 @@ export default function CTA() {
       className="relative py-20 px-6 overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #0a2e1f 0%, #0F6E56 50%, #185FA5 100%)' }}
     >
-      {/* Decorative circles */}
       <div className="absolute top-[-30%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
         style={{ background: 'rgba(255,255,255,0.04)' }} />
       <div className="absolute bottom-[-20%] left-[-5%] w-[400px] h-[400px] rounded-full pointer-events-none"
@@ -21,8 +19,7 @@ export default function CTA() {
 
       <div className="max-w-2xl mx-auto text-center relative">
         <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-6 border"
           style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.2)' }}
         >
@@ -30,9 +27,7 @@ export default function CTA() {
         </motion.span>
 
         <motion.h2
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.1 }}
+          initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }}
           className="text-4xl font-bold text-white leading-tight tracking-tight mb-5"
           style={{ fontFamily: 'Georgia, serif' }}
         >
@@ -40,9 +35,7 @@ export default function CTA() {
         </motion.h2>
 
         <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.15 }}
+          initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.15 }}
           className="text-base leading-relaxed mb-9"
           style={{ color: 'rgba(255,255,255,0.7)' }}
         >
@@ -50,9 +43,7 @@ export default function CTA() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2 }}
           className="flex flex-wrap justify-center gap-3"
         >
           <Link
@@ -67,12 +58,8 @@ export default function CTA() {
           </Link>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5"
-            style={{
-              color: 'white',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-              background: 'rgba(255,255,255,0.08)',
-            }}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5"
+            style={{ border: '1.5px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.08)' }}
           >
             Find Our Location
           </Link>

@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
 import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const features = [
   {
@@ -54,31 +53,29 @@ export default function Features() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section ref={ref} className="py-24 px-6"
-      style={{ background: 'linear-gradient(180deg, #f8fffe 0%, #f0fdf6 100%)' }}>
+    <section
+      ref={ref}
+      className="py-24 px-6"
+      style={{ background: 'linear-gradient(180deg, #f8fffe 0%, #f0fdf6 100%)' }}
+    >
       <div className="max-w-6xl mx-auto">
 
         <div className="text-center mb-14">
           <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
             className="inline-block bg-emerald-100 text-emerald-700 text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full mb-4"
           >
             Why Choose Us
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 14 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.1 }}
+            initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }}
             className="text-4xl font-bold text-slate-900 tracking-tight mb-4"
             style={{ fontFamily: 'Georgia, serif' }}
           >
             The MediCare Difference
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.15 }}
+            initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.15 }}
             className="text-base text-slate-500 max-w-md mx-auto leading-relaxed"
           >
             We combine clinical expertise with heartfelt service to deliver a pharmacy experience that truly puts patients first.
@@ -93,7 +90,7 @@ export default function Features() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 * i }}
               whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(29,158,117,0.12)' }}
-              className="bg-white border border-emerald-100 rounded-2xl p-7 cursor-default transition-colors"
+              className="bg-white border border-emerald-100 rounded-2xl p-7 cursor-default"
             >
               <div
                 className="w-13 h-13 rounded-2xl flex items-center justify-center mb-5"
