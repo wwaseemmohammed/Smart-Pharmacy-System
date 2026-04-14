@@ -1,0 +1,11 @@
+.layout { display: flex; flex: 1; min-height: calc(100vh - 56px); }
+.main { flex: 1; padding: 1.25rem 1.5rem; overflow-y: auto; min-width: 0; }
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+.searchWrap { flex: 1; position: relative; }
+.searchIcon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-hint); pointer-events: none; }
+.searchInput { width: 100%; padding: 8px 12px 8px 32px; border: 0.5px solid var(--border-medium); border-radius: var(--radius-md); background: var(--bg-primary); font-size: 13px; color: var(--text-primary); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.searchInput:focus { border-color: var(--teal-400); box-shadow: 0 0 0 3px var(--teal-50); }
+.sortSelect { padding: 8px 10px; border: 0.5px solid var(--border-medium); border-radius: var(--radius-md); background: var(--bg-primary); font-size: 13px; color: var(--text-primary); cursor: pointer; outline: none; white-space: nowrap; }
+.count { font-size: 12px; color: var(--text-hint); white-space: nowrap; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 14px; }
+.empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4rem; color: var(--text-hint); font-size: 13px; }
