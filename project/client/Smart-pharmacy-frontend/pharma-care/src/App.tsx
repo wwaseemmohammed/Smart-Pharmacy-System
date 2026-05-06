@@ -2,11 +2,12 @@ import { useState } from 'react';
 import Topbar from './components/Topbar/Topbar';
 import UserView from './components/UserView/UserView';
 import PharmacistView from './components/PharmacistView/PharmacistView';
+import TeamPage from './components/TeamPage/TeamPage';
 import { ToastProvider, useToast } from './components/Toast/Toast';
 import { useCart } from './hooks/useCart';
 import { useMedications } from './hooks/useMedications';
 
-type View = 'user' | 'pharmacist';
+type View = 'user' | 'pharmacist' | 'team';
 
 function AppInner() {
   const [view,     setView]     = useState<View>('user');
@@ -68,7 +69,7 @@ function AppInner() {
           onCheckout={handleCheckout}
           onCartClose={() => setCartOpen(false)}
         />
-      ) : (
+      ) : view === 'pharmacist' ? (
         <PharmacistView
           meds={meds}
           onAdd={handleAddMed}
@@ -76,6 +77,8 @@ function AppInner() {
           onDelete={handleDeleteMed}
           onUpdateStock={handleUpdateStock}
         />
+      ) : (
+        <TeamPage />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
-import { ShoppingCart, Pill } from 'lucide-react';
+import { ShoppingCart, Pill, Users } from 'lucide-react';
 import styles from './Topbar.module.css';
 
-type View = 'user' | 'pharmacist';
+type View = 'user' | 'pharmacist' | 'team';
 
 interface Props {
   view: View;
@@ -24,6 +24,13 @@ export default function Topbar({ view, setView, cartCount, onCartToggle }: Props
           onClick={() => setView('user')}
         >
           Browse
+        </button>
+        <button
+          className={`${styles.tab} ${view === 'team' ? styles.active : ''}`}
+          onClick={() => setView('team')}
+        >
+          <Users size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+          Our Team
         </button>
         <button
           className={`${styles.tab} ${view === 'pharmacist' ? styles.active : ''}`}
