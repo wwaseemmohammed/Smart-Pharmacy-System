@@ -1,0 +1,18 @@
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal { background: var(--bg-primary); border-radius: var(--radius-xl); border: 0.5px solid var(--border-light); width: 320px; box-shadow: 0 16px 48px rgba(0,0,0,0.14); animation: popIn 0.18s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.head { padding: 1rem 1.25rem; border-bottom: 0.5px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.headLeft { display: flex; align-items: center; gap: 8px; }
+.head h3 { font-size: 14px; font-weight: 700; }
+.closeBtn { background: none; border: none; color: var(--text-secondary); display: flex; align-items: center; padding: 4px; border-radius: var(--radius-sm); }
+.body { padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+.medName { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+.field input { padding: 8px 10px; border: 0.5px solid var(--border-medium); border-radius: var(--radius-md); background: var(--bg-primary); font-size: 14px; font-weight: 600; color: var(--text-primary); outline: none; }
+.field input:focus { border-color: var(--teal-400); box-shadow: 0 0 0 3px var(--teal-50); }
+.hint { font-size: 12px; color: var(--text-hint); }
+.foot { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border-light); display: flex; gap: 8px; justify-content: flex-end; }
+.cancelBtn { padding: 7px 14px; border: 0.5px solid var(--border-medium); border-radius: var(--radius-md); background: transparent; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.saveBtn { padding: 7px 16px; background: var(--teal-400); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 700; transition: background 0.15s; }
+.saveBtn:hover { background: var(--teal-600); }
