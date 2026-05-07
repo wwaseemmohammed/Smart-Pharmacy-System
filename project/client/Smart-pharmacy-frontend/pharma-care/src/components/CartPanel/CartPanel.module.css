@@ -20,3 +20,8 @@
 .checkoutBtn { width: 100%; padding: 10px; background: var(--teal-400); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; transition: background 0.15s; }
 .checkoutBtn:hover:not(:disabled) { background: var(--teal-600); }
 .checkoutBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* WhatsApp order button */
+.waBtn { width: 100%; padding: 10px; background: #25D366; color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 700; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 8px; direction: rtl; }
+.waBtn:hover:not(:disabled) { background: #1ebe5a; }
+.waBtn:disabled { opacity: 0.4; cursor: not-allowed; }
