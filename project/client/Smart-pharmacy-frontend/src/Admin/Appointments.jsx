@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Appointments() {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [appointments, setAppointments] = useState([
+    { id: 1, patient: 'John Doe', doctor: 'Dr. Smith', phone: '+1 234-567-890', time: '09:00 AM', status: 'Completed' },
+    { id: 2, patient: 'Sarah Jenkins', doctor: 'Dr. Adams', phone: '+1 987-654-321', time: '10:15 AM', status: 'In Progress' },
+    { id: 3, patient: 'Michael Brown', doctor: 'Dr. Lee', phone: '+1 555-123-456', time: '01:00 PM', status: 'Waiting' },
+  ]);
+  const [formData, setFormData] = useState({ patient: '', doctor: '', phone: '', time: '' });
+
+  const handleAddAppointment = () => {
+    if (formData.patient && formData.doctor && formData.phone && formData.time) {
+      const newAppointment = {
+        id: appointments.length + 1,
+        patient: formData.patient,
+        doctor: formData.doctor,
+        phone: formData.phone,
+        time: formData.time,
+        status: 'Waiting'
+      };
+      setAppointments([...appointments, newAppointment]);
+      setFormData({ patient: '', doctor: '', phone: '', time: '' });
+      setShowAddForm(false);
+      alert('تم إضافة الموعد بنجاح!');
+    }
+  };
+
+  const handleDeleteAppointment = (id) => {
+    if (confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
+      setAppointments(appointments.filter(app => app.id !== id));
+      alert('تم حذف الموعد بنجاح!');
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-5 pr-10">
         <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Appointments</h2>
-        <button className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => setShowAddForm(true)}
+          className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
             New Appointment
         </button>
@@ -47,53 +81,95 @@ export default function Appointments() {
                   <th className="px-6 py-5">Doctor</th>
                   <th className="px-6 py-5">Time</th>
                   <th className="px-6 py-5">Status</th>
+                  <th className="px-6 py-5">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                <tr className="group hover:bg-gray-50/50 transition-colors">
+                {appointments.map((app) => (
+                <tr key={app.id} className="group hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-[15px] text-[#2a3835] font-bold">John Doe</div>
-                    <div className="text-[13px] text-gray-500">+1 234-567-890</div>
+                    <div className="text-[15px] text-[#2a3835] font-bold">{app.patient}</div>
+                    <div className="text-[13px] text-gray-500">{app.phone}</div>
                   </td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#4a5553] font-medium">Dr. Smith</td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#2a3835] font-semibold">09:00 AM</td>
+                  <td className="px-6 py-4 text-[14.5px] text-[#4a5553] font-medium">{app.doctor}</td>
+                  <td className="px-6 py-4 text-[14.5px] text-[#2a3835] font-semibold">{app.time}</td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold bg-[#eefaf3] text-[#38d373]">
-                      Completed
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold ${
+                        app.status === 'Completed' ? 'bg-[#eefaf3] text-[#38d373]' : 
+                        app.status === 'In Progress' ? 'bg-[#eef5fd] text-[#5e9de6]' : 
+                        'bg-[#fff7ea] text-[#f2a95c]'
+                    }`}>
+                      {app.status}
                     </span>
                   </td>
-                </tr>
-                <tr className="group hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="text-[15px] text-[#2a3835] font-bold">Sarah Jenkins</div>
-                    <div className="text-[13px] text-gray-500">+1 987-654-321</div>
-                  </td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#4a5553] font-medium">Dr. Adams</td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#2a3835] font-semibold">10:15 AM</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold bg-[#eef5fd] text-[#5e9de6]">
-                      In Progress
-                    </span>
+                  <td className="px-6 py-4 text-right">
+                    <button 
+                      onClick={() => handleDeleteAppointment(app.id)}
+                      className="text-red-500 hover:text-red-700 font-semibold text-[13px] transition-colors"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
-                <tr className="group hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="text-[15px] text-[#2a3835] font-bold">Michael Brown</div>
-                    <div className="text-[13px] text-gray-500">+1 555-123-456</div>
-                  </td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#4a5553] font-medium">Dr. Lee</td>
-                  <td className="px-6 py-4 text-[14.5px] text-[#2a3835] font-semibold">01:00 PM</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold bg-[#fff7ea] text-[#f2a95c]">
-                      Waiting
-                    </span>
-                  </td>
-                </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
       </div>
+
+      {/* Add Appointment Modal */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-[24px] p-8 w-96 shadow-2xl">
+            <h3 className="text-[22px] font-bold text-[#2a3835] mb-6">New Appointment</h3>
+            <div className="space-y-4">
+              <input 
+                type="text" 
+                placeholder="Patient Name" 
+                value={formData.patient}
+                onChange={(e) => setFormData({...formData, patient: e.target.value})}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#38d373]"
+              />
+              <input 
+                type="text" 
+                placeholder="Doctor Name" 
+                value={formData.doctor}
+                onChange={(e) => setFormData({...formData, doctor: e.target.value})}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#38d373]"
+              />
+              <input 
+                type="tel" 
+                placeholder="Phone Number" 
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#38d373]"
+              />
+              <input 
+                type="time" 
+                placeholder="Appointment Time" 
+                value={formData.time}
+                onChange={(e) => setFormData({...formData, time: e.target.value})}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#38d373]"
+              />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button 
+                onClick={() => setShowAddForm(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl font-semibold text-[#2a3835] hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleAddAppointment}
+                className="flex-1 px-4 py-2.5 bg-[#38d373] hover:bg-[#2eaa5c] text-white rounded-xl font-semibold transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
