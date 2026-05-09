@@ -22,11 +22,11 @@ export default function Medicines() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-5 pr-10">
-        <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Medicines Inventory</h2>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10 border-b border-gray-200 pb-5 pr-0 md:pr-10">
+        <h2 className="text-3xl md:text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Medicines Inventory</h2>
         <button 
            onClick={() => setShowModal(true)}
-           className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
+           className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
             Add Medicine
         </button>
@@ -45,19 +45,45 @@ export default function Medicines() {
                <option value="quantity">Sort by Quantity</option>
              </select>
           </div>
-          <div className="relative">
+          <div className="relative w-full md:w-72">
              <input 
                type="text" 
                placeholder="Search by name..." 
                value={search}
                onChange={(e) => setSearch(e.target.value)}
-               className="bg-gray-50 border border-gray-100 text-sm font-medium rounded-xl focus:ring-[#38d373] focus:border-[#38d373] block w-64 p-2.5 pl-10" 
+               className="bg-gray-50 border border-gray-100 text-sm font-medium rounded-2xl focus:ring-[#38d373] focus:border-[#38d373] block w-full p-2.5 pl-10" 
              />
              <svg className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
         </div>
         <div className="overflow-x-auto px-1">
-          <table className="w-full text-left border-collapse">
+          <div className="grid gap-4 sm:hidden">
+            {filteredMedicines.map(med => (
+              <div key={med.id} className="bg-slate-50 rounded-3xl p-5 border border-slate-100 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-[#0f2922]">{med.name}</h3>
+                    <p className="text-sm text-slate-500">{med.cat}</p>
+                  </div>
+                  <span className="text-sm font-semibold text-[#38d373]">${med.price.toFixed(2)}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm text-slate-600">
+                  <div>Stock: <strong className="text-slate-800">{med.stock}</strong></div>
+                  <div>Min Alert: <strong className="text-slate-800">{med.min}</strong></div>
+                  <div className="col-span-2">
+                    <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-[12px] font-semibold ${
+                      med.stock === 0 ? 'bg-red-50 text-red-500 border border-red-100' :
+                      med.stock < med.min ? 'bg-orange-50 text-orange-500 border border-orange-100' :
+                      'bg-[#eefaf3] text-[#38d373]'
+                    }`}>
+                      {med.stock === 0 ? 'Out of Stock' : med.stock < med.min ? 'Low Stock' : 'In Stock'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <table className="hidden sm:table w-full text-left border-collapse">
             <thead>
               <tr className="text-gray-400 text-[12px] font-semibold uppercase tracking-wider border-b border-gray-50/50">
                 <th className="px-6 py-5">Name</th>
@@ -111,8 +137,8 @@ export default function Medicines() {
 
       {/* Add / Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl w-[500px] shadow-2xl p-6 relative">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-4 py-6">
+          <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl p-6 relative">
             <h3 className="text-xl font-bold text-[#0f2922] mb-6">Medicine Details</h3>
             <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>

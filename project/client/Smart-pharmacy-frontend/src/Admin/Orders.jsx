@@ -22,10 +22,10 @@ export default function Orders() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-5 pr-10">
-        <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Orders Management</h2>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10 border-b border-gray-200 pb-5 pr-0 md:pr-10">
+        <h2 className="text-3xl md:text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Orders Management</h2>
         
-        <div className="flex bg-white shadow-sm rounded-xl p-1 border border-gray-100">
+        <div className="flex flex-wrap gap-2 bg-white shadow-sm rounded-2xl p-1 border border-gray-100">
           <button 
             onClick={() => setFilter('All')}
             className={`px-5 py-2 text-sm font-bold rounded-lg tracking-wide transition-colors ${filter === 'All' ? 'bg-[#eefaf3] text-[#38d373]' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -52,7 +52,53 @@ export default function Orders() {
           </button>
         </div>
         <div className="overflow-x-auto px-1">
-          <table className="w-full text-left border-collapse">
+          <div className="grid gap-4 sm:hidden">
+            {filteredOrders.map(order => (
+              <div key={order.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#2a3835]">{order.id}</p>
+                      <p className="text-xs text-gray-500">{order.date} · {order.time}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-700">${order.amount.toFixed(2)}</span>
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    <p className="font-semibold text-slate-800">{order.customer}</p>
+                    <p>{order.email}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-bold ${
+                      order.status === 'Delivered' || order.status === 'Accepted' ? 'bg-[#eefaf3] text-[#38d373]' :
+                      order.status === 'Rejected' ? 'bg-[#fee2e2] text-[#ef4444]' :
+                      'bg-[#fff7ea] text-[#f2a95c]'
+                    }`}>
+                      {order.status}
+                    </span>
+                    {order.status === 'Pending' ? (
+                      <div className="flex flex-wrap gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'Accepted'); }}
+                          className="px-3 py-2 bg-[#38d373] hover:bg-[#2eaa5c] text-white text-[12px] font-bold rounded-2xl transition-colors"
+                        >
+                          Accept
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'Rejected'); }}
+                          className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-[12px] font-bold rounded-2xl transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-semibold text-gray-500">Done</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <table className="hidden sm:table w-full text-left border-collapse">
             <thead>
               <tr className="text-gray-400 text-[12px] font-semibold uppercase tracking-wider border-b border-gray-50/50">
                 <th className="px-6 py-5">Order ID</th>

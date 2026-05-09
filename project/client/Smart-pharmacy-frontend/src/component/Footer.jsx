@@ -58,10 +58,7 @@ export default function Footer() {
             <h4 className="text-white text-sm font-semibold mb-4">Quick Links</h4>
             {quickLinks.map(l => (
               <Link key={l.label} to={l.to}
-                className="block text-sm mb-2.5 transition-colors"
-                style={{ color: 'rgba(255,255,255,0.45)' }}
-                onMouseEnter={e => e.target.style.color = '#1D9E75'}
-                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.45)'}
+                className="block text-sm mb-2.5 text-white/70 hover:text-emerald-300 transition-colors"
               >
                 {l.label}
               </Link>

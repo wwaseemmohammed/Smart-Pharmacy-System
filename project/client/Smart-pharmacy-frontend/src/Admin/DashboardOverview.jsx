@@ -5,11 +5,11 @@ export default function DashboardOverview() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-5 pr-10">
-        <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Dashboard Overview</h2>
+      <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between mb-10 border-b border-gray-200 pb-5 pr-0 md:pr-10">
+        <h2 className="text-3xl md:text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Dashboard Overview</h2>
         
         {/* Time Range Selector */}
-        <div className="flex bg-white shadow-sm rounded-xl p-1 border border-gray-100">
+        <div className="flex flex-wrap gap-2 bg-white shadow-sm rounded-2xl p-1 border border-gray-100">
           <button 
              onClick={() => setTimeRange('Today')}
              className={`px-5 py-2 text-sm font-bold rounded-lg tracking-wide transition-colors ${timeRange === 'Today' ? 'bg-[#eefaf3] text-[#38d373]' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -29,7 +29,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-7 mb-10 pr-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-7 mb-10 pr-0 xl:pr-10">
          {/* Card 1 */}
          <div className="bg-white rounded-3xl p-7 flex items-center gap-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 hover:shadow-md transition-shadow">
            <div className="w-[72px] h-[72px] rounded-[22px] bg-[#eefaf3] text-[#38d373] flex items-center justify-center">
@@ -75,7 +75,7 @@ export default function DashboardOverview() {
          </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-7 mb-10 pr-10">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-7 mb-10 pr-0 xl:pr-10">
          {/* Sales Report Chart Placeholder */}
          <div className="col-span-2 bg-white rounded-[24px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 p-7">
             <div className="flex justify-between items-center mb-6">
@@ -134,7 +134,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Recent Orders Table */}
-      <div className="bg-white rounded-[24px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 pr-10 max-w-full">
+      <div className="bg-white rounded-[24px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 max-w-full overflow-hidden">
         <div className="p-7 flex justify-between items-center border-b border-gray-50">
           <h3 className="text-[20px] font-bold text-[#2a3835]">Recent Orders</h3>
           <span className="bg-[#eefaf3] text-[#38d373] text-[11px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">{timeRange}</span>

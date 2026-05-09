@@ -11,8 +11,7 @@ import Suppliers from './Admin/Suppliers'
 
 function App() {
   return (
-    <div className="min-h-screen bg-white">
-      
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<AdminLayout />}>
