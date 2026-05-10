@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply box-border m-0 p-0; }
+  body { @apply font-sans bg-bg-tertiary text-text-primary text-sm leading-normal antialiased; }
+  button { @apply cursor-pointer; }
+  input, select, textarea { font-family: inherit; }
+}
+
+@layer utilities {
+  .scrollbar-thin { scrollbar-width: thin; }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-gray-200 rounded-full; }
+  .animate-slideIn { animation: slideIn 0.2s ease; }
+  .rtl { direction: rtl; }
+}
