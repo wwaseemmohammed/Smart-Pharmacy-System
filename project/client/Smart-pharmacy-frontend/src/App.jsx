@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import Home from './pages/Home';
+import Booking from './pages/Booking';
 import AdminLayout from './component/AdminLayout';
 import DashboardOverview from './Admin/DashboardOverview';
 import Medicines from './Admin/Medicines';
@@ -10,21 +11,19 @@ import Doctors from './Admin/Doctors';
 import Users from './Admin/Users';
 import Suppliers from './Admin/Suppliers';
 
-// Yousef branch imports
-import Topbar from './components/Topbar/Topbar';
+import Navbar from './component/Navbar';
 import UserView from './components/UserView/UserView';
 import TeamPage from './components/TeamPage/TeamPage';
 import { ToastProvider, useToast } from './components/Toast/Toast';
 import { useCart } from './hooks/useCart';
 
-function StoreFront() {
-  const [view, setView] = useState('user');
+function StoreFront({ initialView = 'user' }) {
+  const [view, setView] = useState(initialView);
   const [cartOpen, setCartOpen] = useState(false);
 
   const toast = useToast();
   const { cart, addToCart, changeQty, removeFromCart, clearCart, cartCount } = useCart();
 
-  /* handlers */
   const handleAddToCart = (id) => {
     addToCart(id);
     toast('Added to cart');
@@ -37,12 +36,7 @@ function StoreFront() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topbar
-        view={view}
-        setView={setView}
-        cartCount={cartCount}
-        onCartToggle={() => setCartOpen(o => !o)}
-      />
+      <Navbar />
 
       {view === 'user' ? (
         <UserView
@@ -66,7 +60,10 @@ function AppInner() {
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/store" element={<StoreFront />} />
+        <Route path="/store" element={<StoreFront initialView="user" />} />
+        <Route path="/medicines" element={<StoreFront initialView="user" />} />
+        <Route path="/doctors" element={<StoreFront initialView="team" />} />
+        <Route path="/booking" element={<Booking />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="medicines" element={<Medicines />} />
