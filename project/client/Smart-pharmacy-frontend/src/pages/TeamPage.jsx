@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Phone, Users } from 'lucide-react';
-import { PHARMACISTS, SHIFT_LABELS } from '../../data/pharmacists';
+import { PHARMACISTS, SHIFT_LABELS } from '../data/pharmacists';
+import { usePharmacists } from '../hooks/useApi';
 
 const WaIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -10,16 +11,17 @@ const WaIcon = () => (
 
 export default function TeamPage() {
   const [filter, setFilter] = useState('all');
+  const { pharmacists, loading, error } = usePharmacists();
 
   const displayed = filter === 'all'
-    ? PHARMACISTS
-    : PHARMACISTS.filter(p => p.shift === filter);
+    ? pharmacists
+    : pharmacists.filter(p => p.shift === filter);
 
-  const totalExp = PHARMACISTS.reduce((s, p) => s + p.experience, 0);
-  const avgExp   = Math.round(totalExp / PHARMACISTS.length);
+  const totalExp = pharmacists.reduce((s, p) => s + p.experience, 0);
+  const avgExp   = pharmacists.length > 0 ? Math.round(totalExp / pharmacists.length) : 0;
 
   const shiftCounts = { morning: 0, evening: 0, night: 0 };
-  PHARMACISTS.forEach(p => shiftCounts[p.shift]++);
+  pharmacists.forEach(p => shiftCounts[p.shift]++);
 
   const getShiftClass = (shift) => {
     const classes = {
@@ -30,8 +32,30 @@ export default function TeamPage() {
     return classes[shift] || '';
   };
 
+  if (loading) {
+    return (
+      <div className="flex-1 p-8 pb-12 pt-20" style={{ minHeight: 'calc(100vh - 56px)' }}>
+        <div className="flex flex-col items-center gap-2.5 p-16 text-text-hint text-xs">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
+          <p>Loading pharmacists...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 p-8 pb-12 pt-20" style={{ minHeight: 'calc(100vh - 56px)' }}>
+        <div className="flex flex-col items-center gap-2.5 p-16 text-red-500 text-xs">
+          <p>Error loading pharmacists: {error}</p>
+          <p>Using local data as fallback</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 p-8 pb-12" style={{ minHeight: 'calc(100vh - 56px)' }}>
+    <div className="flex-1 p-8 pb-12 pt-20" style={{ minHeight: 'calc(100vh - 56px)' }}>
       {/* ── Header ── */}
       <div className="mb-8">
         <div className="flex items-end justify-between flex-wrap gap-4">
@@ -65,7 +89,7 @@ export default function TeamPage() {
         <div className="flex-1 bg-bg-primary p-3.5 px-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-md flex items-center justify-center text-base flex-shrink-0 bg-teal-50">👨‍⚕️</div>
           <div>
-            <div className="text-base font-bold tracking-tight text-text-primary leading-none">{PHARMACISTS.length}</div>
+            <div className="text-base font-bold tracking-tight text-text-primary leading-none">{pharmacists.length}</div>
             <div className="text-[11px] text-text-hint mt-0.5">Pharmacists</div>
           </div>
         </div>
@@ -108,8 +132,7 @@ export default function TeamPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-text-primary tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">{p.name}</div>
-                    <div className="text-xs text-text-secondary rtl mt-0.25">{p.nameAr}</div>
-                    <span className="inline-flex items-center mt-1.25 py-0.5 px-2 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">{p.titleAr}</span>
+                    <span className="inline-flex items-center mt-1.25 py-0.5 px-2 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-600 border border-teal-100">{p.title}</span>
                   </div>
                 </div>
 
@@ -120,18 +143,18 @@ export default function TeamPage() {
                   <div className="flex items-center gap-2 text-xs text-text-secondary">
                     <div className="w-5.5 h-5.5 rounded-sm bg-bg-secondary flex items-center justify-center text-[11px] flex-shrink-0">🎓</div>
                     <span className="text-text-hint text-[11px] min-w-13">Specialty</span>
-                    <span className="text-text-primary font-medium text-xs">{p.specialtyAr}</span>
+                    <span className="text-text-primary font-medium text-xs">{p.specialty}</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-text-secondary">
                     <div className="w-5.5 h-5.5 rounded-sm bg-bg-secondary flex items-center justify-center text-[11px] flex-shrink-0">📅</div>
                     <span className="text-text-hint text-[11px] min-w-13">Experience</span>
-                    <span className="text-text-primary font-medium text-xs">{p.experience} years · {p.experience} سنة</span>
+                    <span className="text-text-primary font-medium text-xs">{p.experience} years</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-text-secondary">
                     <div className="w-5.5 h-5.5 rounded-sm bg-bg-secondary flex items-center justify-center text-[11px] flex-shrink-0">{shift.icon}</div>
                     <span className="text-text-hint text-[11px] min-w-13">Shift</span>
                     <span className={`inline-flex items-center gap-1 py-0.25 px-2 rounded-full text-[11px] font-medium ${getShiftClass(p.shift)}`}>
-                      {shift.icon} {shift.ar} · {shift.hours}
+                      {shift.icon} {shift.en} · {shift.hours}
                     </span>
                   </div>
                 </div>

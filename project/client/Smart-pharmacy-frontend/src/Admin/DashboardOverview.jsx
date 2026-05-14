@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
+import { useDashboardSummary } from '../hooks/useApi';
+
+const ranges = {
+  Today: 'today',
+  'This Week': 'week',
+  'This Month': 'month',
+};
 
 export default function DashboardOverview() {
   const [timeRange, setTimeRange] = useState('Today');
+  const { summary, loading, error } = useDashboardSummary(ranges[timeRange]);
 
   return (
     <>
@@ -30,13 +38,20 @@ export default function DashboardOverview() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-7 mb-10 pr-0 xl:pr-10">
+        {error && (
+          <div className="col-span-full rounded-3xl p-5 bg-red-50 border border-red-100 text-red-700 text-sm">
+            Failed to load dashboard data: {error}
+          </div>
+        )}
          {/* Card 1 */}
          <div className="bg-white rounded-3xl p-7 flex items-center gap-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 hover:shadow-md transition-shadow">
            <div className="w-[72px] h-[72px] rounded-[22px] bg-[#eefaf3] text-[#38d373] flex items-center justify-center">
              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
            </div>
            <div>
-             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">{timeRange === 'Today' ? '248' : timeRange === 'This Week' ? '1,540' : '6,200'}</h3>
+             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">
+               {loading ? 'Loading...' : summary?.total_orders ?? '--'}
+             </h3>
              <p className="text-[15px] text-gray-400 font-medium tracking-wide">Total Orders</p>
            </div>
          </div>
@@ -47,7 +62,9 @@ export default function DashboardOverview() {
              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
            </div>
            <div>
-             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">1,847</h3>
+             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">
+               {loading ? 'Loading...' : summary?.total_users ?? '--'}
+             </h3>
              <p className="text-[15px] text-gray-400 font-medium tracking-wide">Total Users</p>
            </div>
          </div>
@@ -58,7 +75,9 @@ export default function DashboardOverview() {
              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
            </div>
            <div>
-             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">{timeRange === 'Today' ? '63' : timeRange === 'This Week' ? '410' : '1,205'}</h3>
+             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">
+               {loading ? 'Loading...' : summary?.total_appointments ?? '--'}
+             </h3>
              <p className="text-[15px] text-gray-400 font-medium tracking-wide">Appointments</p>
            </div>
          </div>
@@ -69,13 +88,44 @@ export default function DashboardOverview() {
              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
            </div>
            <div>
-             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">{timeRange === 'Today' ? '$18.4K' : timeRange === 'This Week' ? '$115.2K' : '$450.8K'}</h3>
+             <h3 className="text-[32px] font-bold font-serif text-[#0f2922] tracking-tight leading-none mb-1.5">
+               {loading ? 'Loading...' : summary ? `$${summary.revenue.toLocaleString()}` : '--'}
+             </h3>
              <p className="text-[15px] text-gray-400 font-medium tracking-wide">Revenue</p>
            </div>
          </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-7 mb-10 pr-0 xl:pr-10">
+        <div className="col-span-full">
+          {loading && (
+            <div className="rounded-3xl border border-dashed border-teal-300 bg-teal-50 p-5 text-teal-700 text-sm">Loading analytics...</div>
+          )}
+          {!loading && summary && (
+            <div className="rounded-3xl border border-gray-100 bg-white p-5 mb-7">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-[18px] font-bold text-[#2a3835]">Low stock medicines</h3>
+                  <p className="text-[13px] text-gray-400 mt-1">Items that need reorder</p>
+                </div>
+                <span className="text-sm font-semibold text-[#aa7eed]">{summary.low_stock_count} alerts</span>
+              </div>
+              <div className="space-y-4">
+                {summary.low_stock_medicines?.length ? summary.low_stock_medicines.map((med) => (
+                  <div key={med.id} className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-gray-100 bg-[#fff7f6]">
+                    <div>
+                      <div className="text-sm font-semibold text-[#2a3835]">{med.name}</div>
+                      <div className="text-xs text-gray-500">Stock: {med.stock} / Min: {med.min_stock}</div>
+                    </div>
+                    <span className="text-xs font-semibold text-red-600">Reorder</span>
+                  </div>
+                )) : (
+                  <div className="text-sm text-gray-500">No low stock items.</div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
          {/* Sales Report Chart Placeholder */}
          <div className="col-span-2 bg-white rounded-[24px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 p-7">
             <div className="flex justify-between items-center mb-6">

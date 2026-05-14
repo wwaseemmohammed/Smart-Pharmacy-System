@@ -1,8 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function AdminTopNav({ onToggleSidebar }) {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    setIsDropdownOpen(false);
+    navigate('/login');
+  };
+
   return (
     <header className="bg-white border-b border-gray-100 h-20 px-4 sm:px-6 md:px-10 flex items-center justify-between shrink-0">
       <button
@@ -37,13 +60,35 @@ export default function AdminTopNav({ onToggleSidebar }) {
           <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
         </button>
 
-        <div className="flex items-center gap-3 pl-3 border-l border-gray-100 cursor-pointer group">
-          <img src="https://i.pravatar.cc/150?img=68" alt="Admin" className="w-10 h-10 rounded-full object-cover border-2 border-transparent group-hover:border-[#38d373] transition-colors" />
-          <div className="hidden sm:block">
-            <p className="text-[14px] font-bold text-[#2a3835] leading-tight">Admin User</p>
-            <p className="text-[12px] font-medium text-gray-400">Superadmin</p>
-          </div>
-          <svg className="w-4 h-4 text-gray-400 group-hover:text-[#38d373] transition-colors ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+        <div className="flex items-center gap-3 pl-3 border-l border-gray-100 relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <img src="https://i.pravatar.cc/150?img=68" alt="Admin" className="w-10 h-10 rounded-full object-cover border-2 border-transparent hover:border-[#38d373] transition-colors" />
+            <div className="hidden sm:block">
+              <p className="text-[14px] font-bold text-[#2a3835] leading-tight">{user?.name || 'Admin User'}</p>
+              <p className="text-[12px] font-medium text-gray-400">Superadmin</p>
+            </div>
+            <svg className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50">
+              <div className="p-4 border-b border-gray-100">
+                <p className="text-[14px] font-semibold text-[#2a3835]">{user?.name || 'Admin User'}</p>
+                <p className="text-[12px] text-gray-500 mt-1">{user?.email || 'm@gmail.com'}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-[14px] text-red-600 hover:bg-red-50 transition-colors font-medium"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out & Switch Account
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

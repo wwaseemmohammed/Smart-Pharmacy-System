@@ -15,6 +15,9 @@ export default function MedCard({ med, cartQty, onAdd }) {
     return colors[cat] || 'bg-gray-50';
   };
 
+  const price = Number(med.price);
+  const priceLabel = Number.isFinite(price) ? `$${price.toFixed(2)}` : 'N/A';
+
   return (
     <article className="bg-bg-primary border border-border-light rounded-lg overflow-hidden transition-all hover:border-border-medium hover:-translate-y-0.5 hover:shadow-md">
       <div className={`h-27.5 flex items-center justify-center relative ${getCategoryBg(med.cat)} border border-white`}>
@@ -35,7 +38,7 @@ export default function MedCard({ med, cartQty, onAdd }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-base font-bold text-teal-600 tracking-tight">${med.price.toFixed(2)}</span>
+          <span className="text-base font-bold text-teal-600 tracking-tight">{priceLabel}</span>
           <button
             className={`flex items-center gap-1.25 py-1.25 px-3 bg-teal-400 text-white border-none rounded-md text-xs font-semibold transition-colors ${
               status === 'out' ? 'bg-bg-secondary text-text-hint cursor-not-allowed' : 
