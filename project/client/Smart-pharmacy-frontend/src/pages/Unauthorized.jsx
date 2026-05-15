@@ -5,49 +5,29 @@ export default function Unauthorized() {
   const { user, logout } = useAuth()
 
   return (
-    <div style={{
-      minHeight:'100vh',
-      background:'linear-gradient(145deg,#f0fdf6,#e1f5ee)',
-      display:'flex', alignItems:'center', justifyContent:'center',
-      fontFamily:"'Inter', system-ui, sans-serif",
-      padding:24,
-    }}>
-      <div style={{
-        background:'#fff', borderRadius:20, padding:'48px 40px',
-        border:'0.5px solid #e8eeed',
-        boxShadow:'0 20px 60px rgba(0,0,0,.06)',
-        maxWidth:420, width:'100%', textAlign:'center',
-      }}>
-        <div style={{ fontSize:56, marginBottom:16 }}>🔐</div>
-        <h1 style={{ fontSize:22, fontWeight:700, color:'#1a2d27', fontFamily:'Georgia,serif', marginBottom:8 }}>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4 sm:p-6 font-sans">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-10 md:p-12 border border-gray-100 shadow-lg max-w-sm w-full text-center">
+        <div className="text-5xl sm:text-6xl mb-4 sm:mb-6">🔐</div>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-serif mb-3 sm:mb-4">
           Access Restricted
         </h1>
-        <p style={{ fontSize:13, color:'#8fa89f', lineHeight:1.6, marginBottom:8 }}>
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-5 sm:mb-6">
           The dashboard is only accessible to the pharmacy owner.
         </p>
         {user && (
-          <div style={{ background:'#f7f9f8', borderRadius:10, padding:'10px 14px', marginBottom:24 }}>
-            <p style={{ fontSize:12, color:'#4a6660', margin:0 }}>
-              Signed in as <strong style={{ color:'#1a2d27' }}>{user.email}</strong>
+          <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-6 sm:mb-8">
+            <p className="text-xs sm:text-sm text-gray-700 m-0">
+              Signed in as <strong className="text-gray-900">{user.email}</strong>
             </p>
           </div>
         )}
-        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          <Link to="/" style={{ textDecoration:'none' }}>
-            <button style={{
-              width:'100%', padding:'11px 0', borderRadius:12, border:'none',
-              background:'linear-gradient(135deg,#1D9E75,#0F6E56)',
-              color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer',
-            }}>
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <Link to="/" className="no-underline">
+            <button className="w-full py-2.5 sm:py-3 rounded-lg sm:rounded-xl border-none bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-xs sm:text-sm font-bold cursor-pointer transition-all shadow-md hover:shadow-lg">
               ← Back to Home
             </button>
           </Link>
-          <button onClick={logout} style={{
-            width:'100%', padding:'11px 0', borderRadius:12,
-            border:'0.5px solid #e8eeed',
-            background:'#f7f9f8', color:'#4a6660',
-            fontSize:13, fontWeight:600, cursor:'pointer',
-          }}>
+          <button onClick={logout} className="w-full py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs sm:text-sm font-semibold cursor-pointer transition-colors">
             Sign Out & Switch Account
           </button>
         </div>
