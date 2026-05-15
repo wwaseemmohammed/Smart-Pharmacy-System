@@ -1,31 +1,68 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import api from '../services/api';
+import { useToast } from '../component/Toast/Toast';
 
 export default function Doctors() {
+  const toast = useToast();
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [doctors, setDoctors] = useState([
-    { name: "Dr. Sarah Smith", spec: "Cardiologist", exp: "15 Years", status: "Available", img: "https://i.pravatar.cc/150?img=1" },
-    { name: "Dr. James Wilson", spec: "Pediatrician", exp: "8 Years", status: "On Leave", img: "https://i.pravatar.cc/150?img=11" },
-    { name: "Dr. Emily Chen", spec: "Dermatologist", exp: "12 Years", status: "Available", img: "https://i.pravatar.cc/150?img=5" },
-    { name: "Dr. Michael Brown", spec: "Neurologist", exp: "20 Years", status: "In Surgery", img: "https://i.pravatar.cc/150?img=8" },
-    { name: "Dr. Jessica Davis", spec: "General Surgeon", exp: "10 Years", status: "Available", img: "https://i.pravatar.cc/150?img=9" },
-    { name: "Dr. David Miller", spec: "Orthopedics", exp: "18 Years", status: "Available", img: "https://i.pravatar.cc/150?img=12" },
-  ]);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({ name: '', spec: '', exp: '' });
 
-  const handleAddDoctor = () => {
-    if (formData.name && formData.spec && formData.exp) {
-      const newDoctor = {
-        name: formData.name,
-        spec: formData.spec,
-        exp: formData.exp,
-        status: "Available",
-        img: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 50)}`
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        const { data } = await api.get('/pharmacists');
+        setDoctors(data.map((row) => ({
+          name: row.name,
+          spec: row.title || row.specialty || 'General',
+          exp: `${row.experience || 0} Years`,
+          status: row.status || 'Available',
+          img: row.avatar_color ? `https://i.pravatar.cc/150?img=${row.id || Math.floor(Math.random() * 50)}` : `https://i.pravatar.cc/150?img=${row.id || Math.floor(Math.random() * 50)}`,
+          id: row.id,
+        })));
+        setError('');
+      } catch (err) {
+        setError(err.response?.data?.message || err.message || 'Failed to load doctors');
+        console.error('Failed to load doctors:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  const handleAddDoctor = async () => {
+    if (!formData.name.trim() || !formData.spec.trim() || !formData.exp.trim()) {
+      toast('Please fill doctor name, specialization and experience', 'error');
+      return;
+    }
+
+    try {
+      const payload = {
+        name: formData.name.trim(),
+        title: formData.spec.trim(),
+        specialty: formData.spec.trim(),
+        experience: Number(formData.exp.replace(/[^0-9]/g, '')) || 0,
+        status: 'Available',
       };
-      setDoctors([...doctors, newDoctor]);
+      const { data } = await api.post('/pharmacists', payload);
+      setDoctors(prev => [{
+        name: data.name,
+        spec: data.title || data.specialty || 'General',
+        exp: `${data.experience || 0} Years`,
+        status: data.status || 'Available',
+        img: `https://i.pravatar.cc/150?img=${data.id || Math.floor(Math.random() * 50)}`,
+        id: data.id,
+      }, ...prev]);
       setFormData({ name: '', spec: '', exp: '' });
       setShowAddForm(false);
-      alert('تم إضافة الطبيب بنجاح!');
+      toast('Doctor added successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || err.message || 'Failed to save doctor', 'error');
     }
   };
 
@@ -34,13 +71,16 @@ export default function Doctors() {
   };
 
   const handleSendMessage = (doctor) => {
-    alert(`تم فتح نافذة الرسائل لـ ${doctor.name}`);
+    toast(`Message window opened for ${doctor.name}`);
   };
 
   return (
     <>
       <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-5 pr-10">
-        <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Our Doctors</h2>
+        <div>
+          <h2 className="text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Our Doctors</h2>
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+        </div>
         <button 
           onClick={() => setShowAddForm(true)}
           className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
@@ -50,7 +90,9 @@ export default function Doctors() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pr-10">
-        {doctors.map((doc, i) => (
+        {loading ? (
+          <div className="col-span-full text-center text-slate-500">Loading doctors...</div>
+        ) : doctors.map((doc, i) => (
           <div key={i} className="bg-white rounded-[24px] p-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-gray-50/50 hover:-translate-y-1 transition-transform">
             <div className="flex items-center gap-4 mb-4">
               <img src={doc.img} alt={doc.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-gray-100" />
@@ -89,7 +131,6 @@ export default function Doctors() {
         ))}
       </div>
 
-      {/* Add Doctor Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-[24px] p-8 w-96 shadow-2xl">
@@ -135,7 +176,6 @@ export default function Doctors() {
         </div>
       )}
 
-      {/* View Profile Modal */}
       {selectedDoctor && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-[24px] p-8 w-96 shadow-2xl">

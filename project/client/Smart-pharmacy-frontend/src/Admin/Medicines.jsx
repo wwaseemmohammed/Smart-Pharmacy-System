@@ -1,18 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
+import { useToast } from '../component/Toast/Toast';
+
+const normalizeMedicine = (item) => ({
+  id: item.id,
+  name: item.name,
+  cat: item.category || item.cat || 'Other',
+  price: Number(item.price) || 0,
+  stock: Number(item.stock) || 0,
+  min: Number(item.min_stock || item.min || 0),
+  description: item.description || item.desc || '',
+  usage: item.usage_info || item.usage || '',
+});
+
+const initialForm = {
+  name: '',
+  cat: '',
+  price: '',
+  stock: '',
+  min: '',
+  description: '',
+  usage: '',
+};
 
 export default function Medicines() {
+  const toast = useToast();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [showModal, setShowModal] = useState(false);
+  const [medicines, setMedicines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState(initialForm);
 
-  const initialMedicines = [
-    { id: 1, name: "Paracetamol 500mg", cat: "Pain Relief", price: 5.00, stock: 1200, min: 100 },
-    { id: 2, name: "Amoxicillin 250mg", cat: "Antibiotics", price: 12.50, stock: 15, min: 50 },
-    { id: 3, name: "Vitamin C 1000mg", cat: "Supplements", price: 18.00, stock: 0, min: 20 },
-    { id: 4, name: "Ibuprofen 400mg", cat: "Pain Relief", price: 8.20, stock: 450, min: 100 },
-  ];
+  useEffect(() => {
+    fetchMedicines();
+  }, []);
 
-  const filteredMedicines = initialMedicines
+  const fetchMedicines = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/medicines');
+      setMedicines((data.medicines || []).map(normalizeMedicine));
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to load medicines');
+      console.warn('Failed to load medicines from API:', err.message);
+      setMedicines([
+        { id: 1, name: 'Paracetamol 500mg', cat: 'Pain Relief', price: 5.00, stock: 1200, min: 100, description: '', usage: '' },
+        { id: 2, name: 'Amoxicillin 250mg', cat: 'Antibiotics', price: 12.50, stock: 15, min: 50, description: '', usage: '' },
+        { id: 3, name: 'Vitamin C 1000mg', cat: 'Supplements', price: 18.00, stock: 0, min: 20, description: '', usage: '' },
+        { id: 4, name: 'Ibuprofen 400mg', cat: 'Pain Relief', price: 8.20, stock: 450, min: 100, description: '', usage: '' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveMedicine = async (e) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.price) {
+      toast('Please enter a medicine name and price', 'error');
+      return;
+    }
+
+    try {
+      const payload = new FormData();
+      payload.append('name', formData.name.trim());
+      payload.append('category', formData.cat.trim() || 'other');
+      payload.append('price', formData.price);
+      payload.append('stock', formData.stock || 0);
+      payload.append('min_stock', formData.min || 0);
+      payload.append('description', formData.description.trim());
+      payload.append('usage_info', formData.usage.trim());
+      payload.append('is_new', 0);
+      payload.append('popular', 50);
+
+      const { data } = await api.post('/medicines', payload);
+      setMedicines(prev => [normalizeMedicine(data), ...prev]);
+      setFormData(initialForm);
+      setShowModal(false);
+      toast('Medicine added successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || err.message || 'Failed to save medicine', 'error');
+    }
+  };
+
+  const filteredMedicines = medicines
     .filter(m => m.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
@@ -23,8 +97,11 @@ export default function Medicines() {
   return (
     <>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10 border-b border-gray-200 pb-5 pr-0 md:pr-10">
-        <h2 className="text-3xl md:text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Medicines Inventory</h2>
-        <button 
+        <div>
+          <h2 className="text-3xl md:text-[34px] font-extrabold font-serif text-[#0f2922] tracking-tight">Medicines Inventory</h2>
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+        </div>
+        <button
            onClick={() => setShowModal(true)}
            className="bg-[#38d373] hover:bg-[#2eaa5c] text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
@@ -36,7 +113,7 @@ export default function Medicines() {
         <div className="p-7 flex justify-between items-center border-b border-gray-50">
           <div className="flex items-center gap-4">
              <h3 className="text-[20px] font-bold text-[#2a3835]">All Medicines</h3>
-             <select 
+             <select
                className="bg-gray-50 border border-gray-100 text-sm font-semibold rounded-lg text-gray-500 py-2 px-3 outline-none focus:ring-2 focus:ring-[#38d373]/20"
                value={sortBy}
                onChange={(e) => setSortBy(e.target.value)}
@@ -46,12 +123,12 @@ export default function Medicines() {
              </select>
           </div>
           <div className="relative w-full md:w-72">
-             <input 
-               type="text" 
-               placeholder="Search by name..." 
+             <input
+               type="text"
+               placeholder="Search by name..."
                value={search}
                onChange={(e) => setSearch(e.target.value)}
-               className="bg-gray-50 border border-gray-100 text-sm font-medium rounded-2xl focus:ring-[#38d373] focus:border-[#38d373] block w-full p-2.5 pl-10" 
+               className="bg-gray-50 border border-gray-100 text-sm font-medium rounded-2xl focus:ring-[#38d373] focus:border-[#38d373] block w-full p-2.5 pl-10"
              />
              <svg className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
@@ -135,7 +212,6 @@ export default function Medicines() {
         </div>
       </div>
 
-      {/* Add / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-4 py-6">
           <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl p-6 relative">
@@ -143,30 +219,91 @@ export default function Medicines() {
             <button onClick={() => setShowModal(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setShowModal(false); }}>
+            <form className="space-y-4" onSubmit={handleSaveMedicine}>
               <div>
                 <label className="block text-[13px] font-bold text-gray-700 mb-1">Name *</label>
-                <input type="text" required placeholder="e.g. Paracetamol" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]" />
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  type="text"
+                  required
+                  placeholder="e.g. Paracetamol"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[13px] font-bold text-gray-700 mb-1">Price *</label>
-                  <input type="number" step="0.01" required placeholder="0.00" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]" />
+                  <input
+                    name="price"
+                    value={formData.price}
+                    onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                    type="number"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  />
                 </div>
                 <div>
                   <label className="block text-[13px] font-bold text-gray-700 mb-1">Quantity</label>
-                  <input type="number" required placeholder="0" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]" />
+                  <input
+                    name="stock"
+                    value={formData.stock}
+                    onChange={(e) => setFormData(prev => ({ ...prev, stock: e.target.value }))}
+                    type="number"
+                    required
+                    placeholder="0"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[13px] font-bold text-gray-700 mb-1">Minimum Alert Level</label>
-                  <input type="number" placeholder="50" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]" />
+                  <input
+                    name="min"
+                    value={formData.min}
+                    onChange={(e) => setFormData(prev => ({ ...prev, min: e.target.value }))}
+                    type="number"
+                    placeholder="50"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  />
                 </div>
                 <div>
                   <label className="block text-[13px] font-bold text-gray-700 mb-1">Category</label>
-                  <input type="text" placeholder="e.g. Antibiotics" className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]" />
+                  <input
+                    name="cat"
+                    value={formData.cat}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cat: e.target.value }))}
+                    type="text"
+                    placeholder="e.g. Antibiotics"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  />
                 </div>
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-gray-700 mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Optional medicine description"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  rows="3"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-gray-700 mb-1">Usage Instructions</label>
+                <textarea
+                  name="usage"
+                  value={formData.usage}
+                  onChange={(e) => setFormData(prev => ({ ...prev, usage: e.target.value }))}
+                  placeholder="Optional usage information"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#38d373]"
+                  rows="3"
+                />
               </div>
               <div className="pt-4 flex gap-3">
                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors">Cancel</button>

@@ -20,15 +20,21 @@ export default function MedicinesPage() {
   });
 
   const { medicines, loading, error } = useMedicines(search, filters.category, sort);
-  const { cart, addToCart, changeQty, removeFromCart, clearCart } = useCart();
+  const { cart, addToCart, changeQty, removeFromCart, clearCart, cartCount } = useCart();
 
   const handleAddToCart = (id) => {
     addToCart(id);
+    setCartOpen(true);
   };
 
   const handleCheckout = () => {
     clearCart();
   };
+
+  const cartTotal = Object.entries(cart).reduce((sum, [id, qty]) => {
+    const med = medicines.find(m => m.id === Number(id));
+    return sum + (med ? med.price * qty : 0);
+  }, 0);
 
   // Filter medicines based on local filters (price, availability)
   const filtered = medicines.filter(m => {
@@ -44,8 +50,8 @@ export default function MedicinesPage() {
         <Sidebar filters={filters} setFilters={setFilters} />
 
         <main className="flex-1 p-5 pt-5 px-6 overflow-y-auto min-w-0">
-          <div className="flex items-center gap-2.5 mb-5">
-            <div className="flex-1 relative">
+          <div className="flex flex-col gap-3 mb-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex-1 min-w-0 relative">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-hint pointer-events-none" />
               <input
                 type="text"
@@ -55,13 +61,29 @@ export default function MedicinesPage() {
                 className="w-full py-2 px-3 pl-8 border border-border-medium rounded-md bg-bg-primary text-xs text-text-primary outline-none transition-all focus:border-teal-400 focus:shadow-[0_0_0_3px_var(--teal-50)]"
               />
             </div>
-            <select
-              value={sort}
-              onChange={e => setSort(e.target.value)}
-              className="py-2 px-2.5 border border-border-medium rounded-md bg-bg-primary text-xs text-text-primary cursor-pointer outline-none whitespace-nowrap"
-            >
-              {SORT_OPTS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value)}
+                className="py-2 px-2.5 border border-border-medium rounded-md bg-bg-primary text-xs text-text-primary cursor-pointer outline-none whitespace-nowrap"
+              >
+                {SORT_OPTS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => setCartOpen(prev => !prev)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-500 text-white text-xs font-semibold hover:bg-teal-600 transition-colors"
+              >
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-teal-600 text-[11px] font-bold">{cartCount}</span>
+                Cart
+                <span className="text-[11px] text-teal-100">${cartTotal.toFixed(2)}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 mb-5">
             <span className="text-xs text-text-hint whitespace-nowrap">{filtered.length} results</span>
           </div>
 

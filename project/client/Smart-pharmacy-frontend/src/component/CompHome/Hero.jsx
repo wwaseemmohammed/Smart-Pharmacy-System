@@ -1,11 +1,9 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useDashboardSummary, useMedicines } from '../../hooks/useApi'
 
-const stats = [
-  { num: '14+', label: 'Years of Service' },
-  { num: '12k+', label: 'Happy Patients' },
-  { num: '5k+', label: 'Products' },
-]
+const openYear = 2010
 
 const services = [
   'Prescription Filling',
@@ -15,6 +13,15 @@ const services = [
 ]
 
 export default function Hero() {
+  const { medicines, total } = useMedicines('', 'all', 'popular', 1, 50)
+  const { summary } = useDashboardSummary('month')
+  const years = new Date().getFullYear() - openYear
+  const stats = useMemo(() => [
+    { num: `${years}+`, label: 'Years of Service' },
+    { num: summary?.total_users ? `${summary.total_users.toLocaleString()}+` : '12k+', label: 'Happy Patients' },
+    { num: `${total || medicines.length || 0}+`, label: 'Products' },
+  ], [years, summary?.total_users, total, medicines.length])
+
   return (
     <section
       className="min-h-screen flex items-center relative overflow-hidden pt-16"

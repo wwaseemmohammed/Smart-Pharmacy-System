@@ -8,41 +8,52 @@ router.post('/', async (req, res) => {
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
-    const { customer_name, customer_email, customer_phone, address, items, payment_method, notes } = req.body;
-    if (!customer_name || !items || !items.length)
-      return res.status(400).json({ message: 'Customer name and items are required' });
+    const { customer_name, customer_email, customer_phone, address, items = [], payment_method, notes, order_code } = req.body;
+    if (!customer_name)
+      return res.status(400).json({ message: 'Customer name is required' });
 
-    // Calculate total & validate stock
+    const safeNotes = [
+      order_code ? `Code: ${order_code}` : null,
+      payment_method ? `Payment: ${payment_method}` : null,
+      notes || null,
+    ]
+      .filter(Boolean)
+      .join(' | ');
+
     let total = 0;
-    for (const item of items) {
-      const [[med]] = await conn.execute('SELECT * FROM medicines WHERE id = ?', [item.medicine_id]);
-      if (!med) throw new Error(`Medicine id ${item.medicine_id} not found`);
-      if (med.stock < item.quantity) throw new Error(`Insufficient stock for ${med.name}`);
-      total += med.price * item.quantity;
+    if (items && items.length > 0) {
+      for (const item of items) {
+        const [[med]] = await conn.execute('SELECT * FROM medicines WHERE id = ?', [item.medicine_id]);
+        if (!med) throw new Error(`Medicine id ${item.medicine_id} not found`);
+        if (med.stock < item.quantity) throw new Error(`Insufficient stock for ${med.name}`);
+        total += med.price * item.quantity;
+      }
     }
 
     const [orderResult] = await conn.execute(
       `INSERT INTO orders (customer_name, customer_email, customer_phone, address, total, payment_method, notes)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [customer_name, customer_email || null, customer_phone || null, address || null,
-       total, payment_method || 'Cash', notes || null]
+       total, payment_method || 'Cash', safeNotes || null]
     );
     const orderId = orderResult.insertId;
 
-    for (const item of items) {
-      const [[med]] = await conn.execute('SELECT price FROM medicines WHERE id = ?', [item.medicine_id]);
-      await conn.execute(
-        'INSERT INTO order_items (order_id, medicine_id, quantity, price) VALUES (?, ?, ?, ?)',
-        [orderId, item.medicine_id, item.quantity, med.price]
-      );
-      await conn.execute(
-        'UPDATE medicines SET stock = stock - ? WHERE id = ?',
-        [item.quantity, item.medicine_id]
-      );
+    if (items && items.length > 0) {
+      for (const item of items) {
+        const [[med]] = await conn.execute('SELECT price FROM medicines WHERE id = ?', [item.medicine_id]);
+        await conn.execute(
+          'INSERT INTO order_items (order_id, medicine_id, quantity, price) VALUES (?, ?, ?, ?)',
+          [orderId, item.medicine_id, item.quantity, med.price]
+        );
+        await conn.execute(
+          'UPDATE medicines SET stock = stock - ? WHERE id = ?',
+          [item.quantity, item.medicine_id]
+        );
+      }
     }
 
     await conn.commit();
-    res.status(201).json({ message: 'Order created successfully', order_id: orderId, total });
+    res.status(201).json({ message: 'Order created successfully', order_id: orderId, total, order_code });
   } catch (err) {
     await conn.rollback();
     console.error(err);
