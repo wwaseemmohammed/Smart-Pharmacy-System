@@ -1,6 +1,6 @@
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 
-// رقم واتساب الصيدلية — يمكن تغييره
+// Pharmacy WhatsApp number — update as needed
 const PHARMACY_WA = '970591000001';
 
 const WaIcon = () => (
@@ -11,7 +11,7 @@ const WaIcon = () => (
 
 function buildWaMessage(cart, meds, total) {
   const lines = [];
-  lines.push('🛒 *طلب أدوية جديد — PharmaCare*');
+  lines.push('🛒 *New medicine order — PharmaCare*');
   lines.push('─────────────────────');
 
   const entries = Object.entries(cart);
@@ -19,13 +19,13 @@ function buildWaMessage(cart, meds, total) {
     const m = meds.find(x => x.id === Number(id));
     if (!m) return;
     lines.push(`💊 *${m.name}*`);
-    lines.push(`   الكمية: ${qty}  |  السعر: $${(m.price * qty).toFixed(2)}`);
+    lines.push(`   Qty: ${qty}  |  Price: $${(m.price * qty).toFixed(2)}`);
   });
 
   lines.push('─────────────────────');
-  lines.push(`💰 *الإجمالي: $${total.toFixed(2)}*`);
+  lines.push(`💰 *Total: $${total.toFixed(2)}*`);
   lines.push('');
-  lines.push('يرجى تأكيد الطلب وإرسال عنوان التوصيل. شكراً 🙏');
+  lines.push('Please confirm the order and send your delivery address. Thank you 🙏');
 
   return encodeURIComponent(lines.join('\n'));
 }
@@ -103,16 +103,16 @@ export default function CartPanel({ cart, meds, onChangeQty, onRemove, onCheckou
           disabled={isEmpty}
         >
           <WaIcon />
-          اطلب عبر واتساب
+          Order via WhatsApp
         </button>
 
-        {/* Classic checkout */}
+        <div className="text-[11px] text-slate-500 mb-3">Your order will be sent to the admin for approval.</div>
         <button
           className="w-full py-2.5 bg-teal-400 text-white border-none rounded-md text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-teal-600 disabled:hover:bg-teal-400"
           onClick={onCheckout}
           disabled={isEmpty}
         >
-          Complete purchase
+          Send approval request
         </button>
       </div>
     </aside>

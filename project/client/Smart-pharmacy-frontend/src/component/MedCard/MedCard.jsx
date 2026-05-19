@@ -40,10 +40,8 @@ export default function MedCard({ med, cartQty, onAdd }) {
         <div className="flex items-center justify-between">
           <span className="text-base font-bold text-teal-600 tracking-tight">{priceLabel}</span>
           <button
-            className={`flex items-center gap-1.25 py-1.25 px-3 bg-teal-400 text-white border-none rounded-md text-xs font-semibold transition-colors ${
-              status === 'out' ? 'bg-bg-secondary text-text-hint cursor-not-allowed' : 
-              cartQty ? 'bg-teal-50 text-teal-700 border border-teal-950' : 
-              'hover:bg-teal-600'
+            className={`flex items-center gap-1.25 py-1.25 px-3 border-none rounded-md text-xs font-semibold transition-colors ${
+              status === 'out' ? 'bg-bg-secondary text-text-hint cursor-not-allowed' : 'bg-teal-400 text-white hover:bg-teal-600'
             }`}
             onClick={() => status !== 'out' && onAdd(med.id)}
             disabled={status === 'out'}
@@ -51,7 +49,7 @@ export default function MedCard({ med, cartQty, onAdd }) {
             {status === 'out' ? (
               'Unavailable'
             ) : cartQty ? (
-              <><ShoppingCart size={12} />{cartQty} in cart</>
+              <><ShoppingCart size={12} /> {cartQty} in cart</>
             ) : '+ Add'}
           </button>
         </div>

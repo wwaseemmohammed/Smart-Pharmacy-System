@@ -42,7 +42,7 @@ export default function Orders() {
   };
 
   const deleteOrder = async (id) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+    if (!confirm('Are you sure you want to delete this order?')) return;
     try {
       await api.delete(`/orders/${id}`);
       setOrders(prev => prev.filter(order => order.id !== id));

@@ -8,6 +8,9 @@ import CartPanel from '../component/CartPanel/CartPanel';
 import { INITIAL_MEDS, SORT_OPTS } from '../data/medications';
 import { useMedicines } from '../hooks/useApi';
 import { useCart } from '../hooks/useCart';
+import { useToast } from '../component/Toast/Toast';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 export default function MedicinesPage() {
   const [search, setSearch] = useState('');
@@ -21,14 +24,45 @@ export default function MedicinesPage() {
 
   const { medicines, loading, error } = useMedicines(search, filters.category, sort);
   const { cart, addToCart, changeQty, removeFromCart, clearCart, cartCount } = useCart();
+  const toast = useToast();
+  const { user, isLoggedIn } = useAuth();
 
   const handleAddToCart = (id) => {
     addToCart(id);
     setCartOpen(true);
+    toast('Item added to cart', 'success');
   };
 
-  const handleCheckout = () => {
-    clearCart();
+  const handleCheckout = async () => {
+    const entries = Object.entries(cart);
+    if (!entries.length) {
+      toast('Your cart is empty', 'error');
+      return;
+    }
+    if (!isLoggedIn) {
+      toast('Please log in to send an approval request', 'error');
+      return;
+    }
+
+    const items = entries.map(([id, qty]) => ({ medicine_id: Number(id), quantity: qty }));
+    try {
+      const orderPayload = {
+        customer_name: user.name || 'Customer',
+        customer_email: user.email || null,
+        customer_phone: user.phone || null,
+        address: user.address || 'Not provided',
+        payment_method: 'Cash',
+        notes: 'Customer purchase approval request',
+        items,
+      };
+      const { data } = await api.post('/orders', orderPayload);
+      toast('Approval request sent to admin', 'success');
+      clearCart();
+      setCartOpen(false);
+      console.log('Order request sent:', data);
+    } catch (err) {
+      toast(err.response?.data?.message || err.message || 'Failed to submit order', 'error');
+    }
   };
 
   const cartTotal = Object.entries(cart).reduce((sum, [id, qty]) => {
