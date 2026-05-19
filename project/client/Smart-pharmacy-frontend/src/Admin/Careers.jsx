@@ -215,7 +215,12 @@ export default function Careers() {
       await api.patch(`/jobs/${id}/status`, { status });
       setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
       if (selected?.id === id) setSelected((s) => ({ ...s, status }));
-      toast('Status updated');
+      const msg = status === 'Rejected'
+        ? 'Application rejected — email sent to applicant'
+        : status === 'Reviewed'
+          ? 'Marked as reviewed — email sent to applicant'
+          : 'Status updated';
+      toast(msg);
     } catch (err) {
       toast(err.response?.data?.message || 'Failed to update status', 'error');
     }
@@ -233,7 +238,7 @@ export default function Careers() {
       if (selected?.id === id) {
         setSelected((s) => ({ ...s, status: 'Accepted', pharmacist_id: data.pharmacist?.id }));
       }
-      toast(`${data.pharmacist?.name || 'Applicant'} added to Employees`);
+      toast(`${data.pharmacist?.name || 'Applicant'} added to Employees — acceptance email sent`);
     } catch (err) {
       toast(err.response?.data?.message || 'Failed to hire applicant', 'error');
     } finally {

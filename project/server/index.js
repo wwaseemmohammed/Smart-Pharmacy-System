@@ -49,7 +49,22 @@ app.use((err, req, res, next) => {
 
 // ── Start ─────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Smart Pharmacy API running on http://localhost:${PORT}`);
-  console.log(`📦 Database: smart_pharmacy`);
-});
+const { ensureCareersSchema } = require('./config/migrate');
+
+async function start() {
+  try {
+    await ensureCareersSchema();
+  } catch (err) {
+    console.error('⚠️  Careers schema migration failed:', err.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Smart Pharmacy API running on http://localhost:${PORT}`);
+    console.log(`📦 Database: smart_pharmacy`);
+    if (!process.env.SMTP_HOST) {
+      console.log('📧 SMTP not configured — hire/reject emails will be logged only');
+    }
+  });
+}
+
+start();

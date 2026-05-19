@@ -5,6 +5,7 @@ const multer  = require('multer');
 const path    = require('path');
 const fs      = require('fs');
 const { authMiddleware, adminOnly } = require('../middleware/auth');
+const { notifyApplicationStatus } = require('../services/mail');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,6 +28,11 @@ const upload = multer({
   },
 });
 
+async function getApplicationById(id) {
+  const [rows] = await db.execute('SELECT * FROM job_applications WHERE id = ?', [id]);
+  return rows[0] || null;
+}
+
 // POST /api/jobs — public, submit application
 router.post('/', upload.single('cv'), async (req, res) => {
   try {
@@ -38,12 +44,12 @@ router.post('/', upload.single('cv'), async (req, res) => {
     const [result] = await db.execute(
       `INSERT INTO job_applications (full_name, email, phone, position, experience, specialization, about, cv_filename)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [full_name, email, phone||null, position, Number(experience)||0, specialization||null, about||null, cv_filename]
+      [full_name, email, phone || null, position, Number(experience) || 0, specialization || null, about || null, cv_filename]
     );
     res.status(201).json({ message: 'Application submitted successfully', id: result.insertId });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('POST /jobs error:', err);
+    res.status(500).json({ message: err.message || 'Server error' });
   }
 });
 
@@ -52,31 +58,43 @@ router.get('/', authMiddleware, adminOnly, async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT * FROM job_applications ORDER BY created_at DESC');
     res.json(rows);
-  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+  } catch (err) {
+    console.error('GET /jobs error:', err);
+    res.status(500).json({ message: err.message || 'Server error' });
+  }
 });
 
-// PATCH /api/jobs/:id/status — admin only
+// PATCH /api/jobs/:id/status — admin only (Reviewed / Rejected)
 router.patch('/:id/status', authMiddleware, adminOnly, async (req, res) => {
   try {
     const { status } = req.body;
-    const allowed = ['Pending','Reviewed','Accepted','Rejected'];
-    if (!allowed.includes(status)) return res.status(400).json({ message: 'Invalid status' });
-    const [rows] = await db.execute('SELECT pharmacist_id FROM job_applications WHERE id = ?', [req.params.id]);
-    if (!rows.length) return res.status(404).json({ message: 'Application not found' });
-    if (status === 'Rejected' && rows[0].pharmacist_id)
+    const allowed = ['Pending', 'Reviewed', 'Accepted', 'Rejected'];
+    if (!allowed.includes(status))
+      return res.status(400).json({ message: 'Invalid status' });
+
+    const app = await getApplicationById(req.params.id);
+    if (!app) return res.status(404).json({ message: 'Application not found' });
+
+    if (status === 'Rejected' && app.pharmacist_id)
       return res.status(400).json({ message: 'Cannot reject an applicant already added to staff' });
+
     await db.execute('UPDATE job_applications SET status = ? WHERE id = ?', [status, req.params.id]);
-    res.json({ message: 'Status updated' });
-  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+
+    await notifyApplicationStatus({ ...app, status }, status);
+
+    res.json({ message: 'Status updated', status });
+  } catch (err) {
+    console.error('PATCH /jobs/:id/status error:', err);
+    res.status(500).json({ message: err.message || 'Server error' });
+  }
 });
 
-// POST /api/jobs/:id/hire — accept application and add to staff (pharmacists)
+// POST /api/jobs/:id/hire — accept and add to employees
 router.post('/:id/hire', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const [apps] = await db.execute('SELECT * FROM job_applications WHERE id = ?', [req.params.id]);
-    if (!apps.length) return res.status(404).json({ message: 'Application not found' });
+    const app = await getApplicationById(req.params.id);
+    if (!app) return res.status(404).json({ message: 'Application not found' });
 
-    const app = apps[0];
     if (app.pharmacist_id)
       return res.status(400).json({ message: 'This applicant is already on the staff list' });
 
@@ -107,13 +125,19 @@ router.post('/:id/hire', authMiddleware, adminOnly, async (req, res) => {
     );
 
     const [pharmacist] = await db.execute('SELECT * FROM pharmacists WHERE id = ?', [result.insertId]);
+    const hiredApp = { ...app, status: 'Accepted' };
+    await notifyApplicationStatus(hiredApp, 'Accepted');
+
     res.status(201).json({
       message: 'Employee added successfully',
       pharmacist: pharmacist[0],
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message || 'Server error' });
+    console.error('POST /jobs/:id/hire error:', err);
+    const msg = err.code === 'ER_BAD_FIELD_ERROR'
+      ? 'Database needs update — restart the server to apply migrations'
+      : (err.message || 'Server error');
+    res.status(500).json({ message: msg });
   }
 });
 
@@ -123,8 +147,12 @@ router.get('/:id/cv', authMiddleware, adminOnly, async (req, res) => {
     const [rows] = await db.execute('SELECT cv_filename FROM job_applications WHERE id = ?', [req.params.id]);
     if (!rows.length || !rows[0].cv_filename) return res.status(404).json({ message: 'CV not found' });
     const filePath = path.join(__dirname, '../uploads/cv', rows[0].cv_filename);
+    if (!fs.existsSync(filePath)) return res.status(404).json({ message: 'CV file not found' });
     res.download(filePath);
-  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+  } catch (err) {
+    console.error('GET /jobs/:id/cv error:', err);
+    res.status(500).json({ message: err.message || 'Server error' });
+  }
 });
 
 module.exports = router;
