@@ -1,0 +1,21 @@
+{
+  "name": "smart-pharmacy-system",
+  "version": "1.0.0",
+  "description": "Smart Pharmacy System - Full Stack Application",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd project/server && npm run dev",
+    "client": "cd project/client/Smart-pharmacy-frontend && npm run dev",
+    "install-all": "npm run install-server && npm run install-client",
+    "install-server": "cd project/server && npm install",
+    "install-client": "cd project/client/Smart-pharmacy-frontend && npm install",
+    "build": "cd project/client/Smart-pharmacy-frontend && npm run build",
+    "start": "cd project/server && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["pharmacy", "healthcare", "fullstack", "react", "nodejs"],
+  "author": "Smart Pharmacy Team",
+  "license": "MIT"
+}
