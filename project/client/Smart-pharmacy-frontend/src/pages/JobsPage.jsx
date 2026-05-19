@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import Navbar from '../components/Navbar.jsx'
-import Footer from '../components/Footer.jsx'
-import api from '../api.js'
-import { useToast } from '../components/Toast.jsx'
+import Navbar from '../component/Navbar'
+import Footer from '../component/Footer'
+import api from '../services/api'
+import { useToast } from '../component/Toast/Toast'
 
 const POSITIONS = [
   'Pharmacist', 'Assistant Pharmacist', 'Pharmacy Technician',

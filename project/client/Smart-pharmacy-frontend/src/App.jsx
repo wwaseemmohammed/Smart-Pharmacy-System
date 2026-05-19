@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Medicines from './pages/Medicines';
 import Doctors from './pages/Doctors';
+import JobsPage from './pages/JobsPage';
 import AuthPage from './pages/AuthPage';
 import Unauthorized from './pages/Unauthorized';
 import AdminLayout from './component/AdminLayout';
@@ -24,6 +25,7 @@ function AppInner() {
         <Route path="/" element={<Home />} />
         <Route path="/medicines" element={<Medicines />} />
         <Route path="/doctors" element={<Doctors />} />
+        <Route path="/careers" element={<JobsPage />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
