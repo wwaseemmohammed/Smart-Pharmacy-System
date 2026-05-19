@@ -85,7 +85,9 @@ CREATE TABLE IF NOT EXISTS pharmacists (
   experience   INT DEFAULT 0,
   shift        ENUM('morning','evening','night') DEFAULT 'morning',
   phone        VARCHAR(50),
+  email        VARCHAR(150),
   whatsapp     VARCHAR(50),
+  hired_from_application_id INT NULL,
   avatar       VARCHAR(10),
   avatar_color VARCHAR(20) DEFAULT '#1D9E75',
   status       ENUM('Available','On Leave','In Surgery') DEFAULT 'Available',
@@ -118,7 +120,9 @@ CREATE TABLE IF NOT EXISTS job_applications (
   about          TEXT,
   cv_filename    VARCHAR(300),
   status         ENUM('Pending','Reviewed','Accepted','Rejected') DEFAULT 'Pending',
-  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  pharmacist_id  INT NULL,
+  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pharmacist_id) REFERENCES pharmacists(id) ON DELETE SET NULL
 );
 
 -- ── Seed Data ───────────────────────────────────────────────

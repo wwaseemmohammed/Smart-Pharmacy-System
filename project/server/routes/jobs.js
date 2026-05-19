@@ -61,9 +61,60 @@ router.patch('/:id/status', authMiddleware, adminOnly, async (req, res) => {
     const { status } = req.body;
     const allowed = ['Pending','Reviewed','Accepted','Rejected'];
     if (!allowed.includes(status)) return res.status(400).json({ message: 'Invalid status' });
+    const [rows] = await db.execute('SELECT pharmacist_id FROM job_applications WHERE id = ?', [req.params.id]);
+    if (!rows.length) return res.status(404).json({ message: 'Application not found' });
+    if (status === 'Rejected' && rows[0].pharmacist_id)
+      return res.status(400).json({ message: 'Cannot reject an applicant already added to staff' });
     await db.execute('UPDATE job_applications SET status = ? WHERE id = ?', [status, req.params.id]);
     res.json({ message: 'Status updated' });
   } catch (err) { res.status(500).json({ message: 'Server error' }); }
+});
+
+// POST /api/jobs/:id/hire — accept application and add to staff (pharmacists)
+router.post('/:id/hire', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const [apps] = await db.execute('SELECT * FROM job_applications WHERE id = ?', [req.params.id]);
+    if (!apps.length) return res.status(404).json({ message: 'Application not found' });
+
+    const app = apps[0];
+    if (app.pharmacist_id)
+      return res.status(400).json({ message: 'This applicant is already on the staff list' });
+
+    const avatar = app.full_name.trim().split(/\s+/).filter(Boolean).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'EM';
+    const shift = ['morning', 'evening', 'night'].includes(req.body.shift) ? req.body.shift : 'morning';
+
+    const [result] = await db.execute(
+      `INSERT INTO pharmacists (name, title, specialty, experience, shift, phone, email, avatar, avatar_color, status, hired_from_application_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        app.full_name,
+        app.position,
+        app.specialization || app.position,
+        Number(app.experience) || 0,
+        shift,
+        app.phone || null,
+        app.email,
+        avatar,
+        '#1D9E75',
+        'Available',
+        app.id,
+      ]
+    );
+
+    await db.execute(
+      'UPDATE job_applications SET status = ?, pharmacist_id = ? WHERE id = ?',
+      ['Accepted', result.insertId, app.id]
+    );
+
+    const [pharmacist] = await db.execute('SELECT * FROM pharmacists WHERE id = ?', [result.insertId]);
+    res.status(201).json({
+      message: 'Employee added successfully',
+      pharmacist: pharmacist[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message || 'Server error' });
+  }
 });
 
 // GET /api/jobs/:id/cv — download CV

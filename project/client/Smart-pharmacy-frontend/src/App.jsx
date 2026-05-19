@@ -12,7 +12,8 @@ import DashboardOverview from './Admin/DashboardOverview';
 import AdminMedicines from './Admin/Medicines';
 import Orders from './Admin/Orders';
 import Appointments from './Admin/Appointments';
-import AdminDoctors from './Admin/Doctors';
+import AdminCareers from './Admin/Careers';
+import AdminEmployees from './Admin/Employees';
 import Users from './Admin/Users';
 import Suppliers from './Admin/Suppliers';
 
@@ -34,7 +35,8 @@ function AppInner() {
           <Route path="medicines" element={<AdminMedicines />} />
           <Route path="orders" element={<Orders />} />
           <Route path="appointments" element={<Appointments />} />
-          <Route path="doctors" element={<AdminDoctors />} />
+          <Route path="careers" element={<AdminCareers />} />
+          <Route path="employees" element={<AdminEmployees />} />
           <Route path="users" element={<Users />} />
           <Route path="suppliers" element={<Suppliers />} />
         </Route>

@@ -31,14 +31,14 @@ router.get('/:id', async (req, res) => {
 // POST /api/pharmacists — admin only
 router.post('/', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const { name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, whatsapp, avatar, avatar_color, status } = req.body;
+    const { name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, email, whatsapp, avatar, avatar_color, status } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
 
     const [result] = await db.execute(
-      `INSERT INTO pharmacists (name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, whatsapp, avatar, avatar_color, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO pharmacists (name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, email, whatsapp, avatar, avatar_color, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [name, name_ar||null, title||null, title_ar||null, specialty||null, specialty_ar||null,
-       Number(experience)||0, shift||'morning', phone||null, whatsapp||null,
+       Number(experience)||0, shift||'morning', phone||null, email||null, whatsapp||null,
        avatar||name.substring(0,2).toUpperCase(), avatar_color||'#1D9E75', status||'Available']
     );
     const [newRow] = await db.execute('SELECT * FROM pharmacists WHERE id = ?', [result.insertId]);
@@ -51,14 +51,14 @@ router.post('/', authMiddleware, adminOnly, async (req, res) => {
 // PUT /api/pharmacists/:id — admin only
 router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const { name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, whatsapp, avatar, avatar_color, status } = req.body;
+    const { name, name_ar, title, title_ar, specialty, specialty_ar, experience, shift, phone, email, whatsapp, avatar, avatar_color, status } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
 
     await db.execute(
       `UPDATE pharmacists SET name=?, name_ar=?, title=?, title_ar=?, specialty=?, specialty_ar=?,
-       experience=?, shift=?, phone=?, whatsapp=?, avatar=?, avatar_color=?, status=? WHERE id=?`,
+       experience=?, shift=?, phone=?, email=?, whatsapp=?, avatar=?, avatar_color=?, status=? WHERE id=?`,
       [name, name_ar||null, title||null, title_ar||null, specialty||null, specialty_ar||null,
-       Number(experience)||0, shift||'morning', phone||null, whatsapp||null,
+       Number(experience)||0, shift||'morning', phone||null, email||null, whatsapp||null,
        avatar||name.substring(0,2).toUpperCase(), avatar_color||'#1D9E75', status||'Available',
        req.params.id]
     );
